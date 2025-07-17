@@ -19,29 +19,32 @@ function RegistroUniforme() {
     const nuevo = { vendedor, salon, uniforme, observacion };
     setRegistros([...registros, nuevo]);
 
-    // Limpiar inputs
     setVendedor("");
     setUniforme("sí");
     setObservacion("");
   };
 
   const enviarTodosAGoogleSheets = async () => {
-    const url = "https://script.google.com/macros/s/AKfycbyhtLgaUg772A9uk-ABixx3ujHdQ82Pm4pcc9wh8qN6x_OPVMJ8fiGhaxqAjH2eJA5YOA/exec";
+    const url = "https://script.google.com/macros/s/AKfycbzj0RjsmmRpDRDJJWpAksRdy25lRddyqfw1cFluC_UQ1urHlm48KJ1mMPn9fuzbjGAkug/exec";
 
     try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(registros)
-      });
+      for (const registro of registros) {
+        const formData = new URLSearchParams(registro);
 
-      const data = await res.json();
-      console.log("✅ Enviados correctamente:", data);
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData.toString()
+        });
+
+        const data = await res.json();
+        console.log("✅ Enviado:", data);
+      }
 
       alert("✅ Todos los registros fueron enviados correctamente.");
-      setRegistros([]); // Vaciar después de enviar
+      setRegistros([]);
     } catch (error) {
       console.error("❌ Error al enviar:", error);
       alert("❌ Error al enviar. Revisá la consola.");
