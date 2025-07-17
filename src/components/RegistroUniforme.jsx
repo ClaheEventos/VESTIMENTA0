@@ -1,26 +1,26 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
-import React from "react";
 
 function RegistroUniforme() {
-  const [vendedor, setVendedor] = useState("");
-  const [salon, setSalon] = useState("Salón A");
-  const [uniforme, setUniforme] = useState("sí");
-  const [observacion, setObservacion] = useState("");
-  const [registros, setRegistros] = useState([]);
-  const [registroExpandido, setRegistroExpandido] = useState(null);
-
   const salones = [
-    "Varela", "Varela II ", "Berazategui", "Monteverde", "París",
+    "Varela", "Varela II", "Berazategui", "Monteverde", "París",
     "Dream's", "Melody", "Luxor", "Bernal", "Sol Fest",
     "Clahe", "Onix", "Auguri", "Dominico II", "Gala", "Sarandí II",
     "Garufa", "Lomas", "Temperley", "Clahe Escalada"
   ];
 
+  const [vendedor, setVendedor] = useState("");
+  const [salon, setSalon] = useState(salones[0]); // ✅ valor inicial válido
+  const [uniforme, setUniforme] = useState("sí");
+  const [observacion, setObservacion] = useState("");
+  const [registros, setRegistros] = useState([]);
+  const [registroExpandido, setRegistroExpandido] = useState(null);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const nuevo = { vendedor, salon, uniforme, observacion };
     setRegistros([...registros, nuevo]);
+
     setVendedor("");
     setUniforme("sí");
     setObservacion("");
@@ -32,38 +32,14 @@ function RegistroUniforme() {
     if (registroExpandido === index) setRegistroExpandido(null);
   };
 
-  const exportarExcelYCompartir = async () => {
+  const exportarExcel = () => {
     const fechaActual = new Date().toISOString().split("T")[0];
-    const nombreArchivo = `Registros_${salon}_${fechaActual}.xlsx`;
+    const nombreArchivo = `${salon}_${fechaActual}.xlsx`; // ✅ nombre limpio y correcto
 
     const ws = XLSX.utils.json_to_sheet(registros);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Registros");
-
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const file = new File([excelBuffer], nombreArchivo, {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          title: nombreArchivo,
-          text: "Registro de uniformes",
-          files: [file],
-        });
-      } catch (error) {
-        console.error("Error al compartir:", error);
-        alert("No se pudo compartir el archivo.");
-      }
-    } else {
-      const url = window.URL.createObjectURL(file);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = nombreArchivo;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    }
+    XLSX.writeFile(wb, nombreArchivo);
   };
 
   const toggleDetalle = (index) => {
@@ -138,18 +114,25 @@ function RegistroUniforme() {
             </thead>
             <tbody>
               {registros.map((r, i) => (
-                <React.Fragment key={i}>
-                  <tr>
+                <>
+                  <tr key={i}>
                     <td>{r.vendedor}</td>
                     <td>
-                      <button onClick={() => toggleDetalle(i)} className="boton">
+                      <button
+                        onClick={() => toggleDetalle(i)}
+                        className="boton"
+                      >
                         {registroExpandido === i ? "Ocultar" : "Ver"}
                       </button>{" "}
-                      <button onClick={() => borrarRegistro(i)} className="boton-borrar">
+                      <button
+                        onClick={() => borrarRegistro(i)}
+                        className="boton-borrar"
+                      >
                         Borrar
                       </button>
                     </td>
                   </tr>
+
                   {registroExpandido === i && (
                     <tr>
                       <td colSpan="2">
@@ -161,14 +144,14 @@ function RegistroUniforme() {
                       </td>
                     </tr>
                   )}
-                </React.Fragment>
+                </>
               ))}
             </tbody>
           </table>
 
           <div style={{ textAlign: "right", marginTop: "1rem" }}>
-            <button onClick={exportarExcelYCompartir} className="boton">
-              Compartir / Descargar Excel
+            <button onClick={exportarExcel} className="boton">
+              Descargar Excel
             </button>
           </div>
         </div>
