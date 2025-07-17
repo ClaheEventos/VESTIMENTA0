@@ -1,5 +1,6 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
+import React from "react";
 
 function RegistroUniforme() {
   const [vendedor, setVendedor] = useState("");
@@ -20,7 +21,6 @@ function RegistroUniforme() {
     e.preventDefault();
     const nuevo = { vendedor, salon, uniforme, observacion };
     setRegistros([...registros, nuevo]);
-
     setVendedor("");
     setUniforme("sí");
     setObservacion("");
@@ -57,7 +57,6 @@ function RegistroUniforme() {
         alert("No se pudo compartir el archivo.");
       }
     } else {
-      // Fallback: descarga si no se puede compartir
       const url = window.URL.createObjectURL(file);
       const a = document.createElement("a");
       a.href = url;
@@ -139,26 +138,18 @@ function RegistroUniforme() {
             </thead>
             <tbody>
               {registros.map((r, i) => (
-                <>
-
-                  <tr key={i}>
+                <React.Fragment key={i}>
+                  <tr>
                     <td>{r.vendedor}</td>
                     <td>
-                      <button
-                        onClick={() => toggleDetalle(i)}
-                        className="boton"
-                      >
+                      <button onClick={() => toggleDetalle(i)} className="boton">
                         {registroExpandido === i ? "Ocultar" : "Ver"}
                       </button>{" "}
-                      <button
-                        onClick={() => borrarRegistro(i)}
-                        className="boton-borrar"
-                      >
+                      <button onClick={() => borrarRegistro(i)} className="boton-borrar">
                         Borrar
                       </button>
                     </td>
                   </tr>
-
                   {registroExpandido === i && (
                     <tr>
                       <td colSpan="2">
@@ -170,8 +161,7 @@ function RegistroUniforme() {
                       </td>
                     </tr>
                   )}
-
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
