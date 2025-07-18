@@ -9,23 +9,40 @@ function RegistroUniforme() {
   ];
 
   const [vendedor, setVendedor] = useState("");
+  const [dni, setDni] = useState(""); // ✅ NUEVO estado
   const [salon, setSalon] = useState(salones[0]);
   const [uniforme, setUniforme] = useState("sí");
   const [observacion, setObservacion] = useState("");
   const [registros, setRegistros] = useState([]);
   const [registroExpandido, setRegistroExpandido] = useState(null);
+  const [enviado, setEnviado] = useState(false);
 
+  // ✅ Agrega fecha, hora y DNI
   const agregarRegistro = () => {
-    const nuevo = { vendedor, salon, uniforme, observacion };
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString("es-AR");
+    const hora = ahora.toLocaleTimeString("es-AR");
+
+    const nuevo = {
+      vendedor,
+      dni,
+      salon,
+      uniforme,
+      observacion,
+      fecha,
+      hora
+    };
+
     setRegistros([...registros, nuevo]);
 
     setVendedor("");
+    setDni(""); // ✅ Limpiar DNI también
     setUniforme("sí");
     setObservacion("");
   };
 
   const enviarTodosAGoogleSheets = async () => {
-    const url = "https://script.google.com/macros/s/AKfycbzj0RjsmmRpDRDJJWpAksRdy25lRddyqfw1cFluC_UQ1urHlm48KJ1mMPn9fuzbjGAkug/exec";
+    const url = "https://script.google.com/macros/s/AKfycbwumLJGfue_oeQWspFmwJQIFcbT_1N8PDjW24sFYUCH8YBny-xcUScXAFsr4dGcjVXcgQ/exec";
 
     try {
       for (const registro of registros) {
@@ -45,6 +62,7 @@ function RegistroUniforme() {
 
       alert("✅ Todos los registros fueron enviados correctamente.");
       setRegistros([]);
+      setEnviado(true);
     } catch (error) {
       console.error("❌ Error al enviar:", error);
       alert("❌ Error al enviar. Revisá la consola.");
@@ -78,6 +96,17 @@ function RegistroUniforme() {
             type="text"
             value={vendedor}
             onChange={(e) => setVendedor(e.target.value)}
+            className="input"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="label">DNI:</label>
+          <input
+            type="text"
+            value={dni}
+            onChange={(e) => setDni(e.target.value)}
             className="input"
             required
           />
@@ -151,9 +180,12 @@ function RegistroUniforme() {
                 <tr>
                   <td colSpan="2">
                     <div className="detalle-registro">
+                      <p><strong>DNI:</strong> {registros[registroExpandido].dni}</p>
                       <p><strong>Salón:</strong> {registros[registroExpandido].salon}</p>
                       <p><strong>Uniforme:</strong> {registros[registroExpandido].uniforme}</p>
                       <p><strong>Observación:</strong> {registros[registroExpandido].observacion}</p>
+                      <p><strong>Fecha:</strong> {registros[registroExpandido].fecha}</p>
+                      <p><strong>Hora:</strong> {registros[registroExpandido].hora}</p>
                     </div>
                   </td>
                 </tr>
@@ -162,9 +194,15 @@ function RegistroUniforme() {
           </table>
 
           <div style={{ textAlign: "right", marginTop: "1rem" }}>
-            <button onClick={enviarTodosAGoogleSheets} className="boton">
-              Enviar Todo
-            </button>
+            {!enviado ? (
+              <button onClick={enviarTodosAGoogleSheets} className="boton">
+                Enviar Todo
+              </button>
+            ) : (
+              <div className="mensaje-gracias">
+                <h3>✅ ¡Gracias por enviar los registros!</h3>
+              </div>
+            )}
           </div>
         </div>
       )}
