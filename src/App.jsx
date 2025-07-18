@@ -1,17 +1,51 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
-
-import Logo from './components/Logo'; // Mostrará logo.png desde public/
+import Logo from './components/Logo';
 import RegistroUniforme from './components/RegistroUniforme';
 
 function App() {
+  const [autenticado, setAutenticado] = useState(false);
+  const [clave, setClave] = useState("");
+  const CLAVE_CORRECTA = "1234567"; // 🔒 Cambiala si querés otra clave
+
+  const manejarIngreso = (e) => {
+    e.preventDefault();
+    if (clave === CLAVE_CORRECTA) {
+      setAutenticado(true);
+    } else {
+      alert("❌ Clave incorrecta.");
+      setClave("");
+    }
+  };
+
   return (
     <div className="App">
-      <Logo /> {/* Mostrar el logo arriba */}
-      <RegistroUniforme /> {/* Mostrar el formulario debajo */}
+  {!autenticado ? (
+    <div className="login-container">
+      <Logo />
+      <form onSubmit={manejarIngreso} className="formulario">
+        <h2 className="titulo">🔐 Ingreso Restringido</h2>
+        <label className="label">Ingrese la clave:</label>
+        <input
+          type="password"
+          value={clave}
+          onChange={(e) => setClave(e.target.value)}
+          className="input"
+          required
+        />
+        <button type="submit" className="boton">
+          Ingresar
+        </button>
+      </form>
     </div>
+  ) : (
+    <>
+      <Logo />
+      <RegistroUniforme />
+    </>
+  )}
+</div>
   );
 }
 

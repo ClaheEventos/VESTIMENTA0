@@ -8,8 +8,9 @@ function RegistroUniforme() {
     "Garufa", "Lomas", "Temperley", "Clahe Escalada"
   ];
 
+  const [numeroResponsable, setNumeroResponsable] = useState(""); // ✅ nuevo
   const [vendedor, setVendedor] = useState("");
-  const [dni, setDni] = useState(""); // ✅ NUEVO estado
+  const [dni, setDni] = useState("");
   const [salon, setSalon] = useState(salones[0]);
   const [uniforme, setUniforme] = useState("sí");
   const [observacion, setObservacion] = useState("");
@@ -17,13 +18,18 @@ function RegistroUniforme() {
   const [registroExpandido, setRegistroExpandido] = useState(null);
   const [enviado, setEnviado] = useState(false);
 
-  // ✅ Agrega fecha, hora y DNI
   const agregarRegistro = () => {
+    if (dni.length !== 8) {
+      alert("⚠️ El DNI debe tener exactamente 8 dígitos.");
+      return;
+    }
+
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString("es-AR");
     const hora = ahora.toLocaleTimeString("es-AR");
 
     const nuevo = {
+      numeroResponsable,
       vendedor,
       dni,
       salon,
@@ -36,13 +42,14 @@ function RegistroUniforme() {
     setRegistros([...registros, nuevo]);
 
     setVendedor("");
-    setDni(""); // ✅ Limpiar DNI también
+    setDni("");
     setUniforme("sí");
     setObservacion("");
   };
 
   const enviarTodosAGoogleSheets = async () => {
-    const url = "https://script.google.com/macros/s/AKfycbwumLJGfue_oeQWspFmwJQIFcbT_1N8PDjW24sFYUCH8YBny-xcUScXAFsr4dGcjVXcgQ/exec";
+    setEnviado(true);
+    const url = "https://script.google.com/macros/s/AKfycbxQ7vAGtR32lt8CADqkEV5qOWP9Uq4SDu3Hs0zBlKrRaDS3YbVgvxovXhibeU8wh38u2w/exec";
 
     try {
       for (const registro of registros) {
@@ -62,10 +69,10 @@ function RegistroUniforme() {
 
       alert("✅ Todos los registros fueron enviados correctamente.");
       setRegistros([]);
-      setEnviado(true);
     } catch (error) {
       console.error("❌ Error al enviar:", error);
       alert("❌ Error al enviar. Revisá la consola.");
+      setEnviado(false);
     }
   };
 
@@ -91,22 +98,43 @@ function RegistroUniforme() {
         className="formulario"
       >
         <div>
-          <label className="label">Nombre del Vendedor:</label>
+          <label className="label">Número del Responsable:</label>
           <input
             type="text"
-            value={vendedor}
-            onChange={(e) => setVendedor(e.target.value)}
+            value={numeroResponsable}
+            onChange={(e) => {
+              const soloNumeros = e.target.value.replace(/\D/g, "");
+              setNumeroResponsable(soloNumeros);
+            }}
             className="input"
             required
           />
         </div>
 
         <div>
-          <label className="label">DNI:</label>
+          <label className="label">Nombre del Vendedor:</label>
+          <input
+            type="text"
+            value={vendedor}
+            onChange={(e) => {
+              const soloLetras = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+              setVendedor(soloLetras);
+            }}
+            className="input"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="label">DNI del Vendedor:</label>
           <input
             type="text"
             value={dni}
-            onChange={(e) => setDni(e.target.value)}
+            onChange={(e) => {
+              const soloNumeros = e.target.value.replace(/\D/g, "");
+              if (soloNumeros.length <= 8) setDni(soloNumeros);
+            }}
+            maxLength={8}
             className="input"
             required
           />
@@ -186,6 +214,8 @@ function RegistroUniforme() {
                       <p><strong>Observación:</strong> {registros[registroExpandido].observacion}</p>
                       <p><strong>Fecha:</strong> {registros[registroExpandido].fecha}</p>
                       <p><strong>Hora:</strong> {registros[registroExpandido].hora}</p>
+                      <p><strong>Responsable de la planilla:</strong> {registros[registroExpandido].numeroResponsable}</p>
+
                     </div>
                   </td>
                 </tr>

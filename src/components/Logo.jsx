@@ -4,7 +4,7 @@ function Logo() {
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
       <img
-        src="./src/assets/logo.png"
+        src="./src/assets/images/logo.png"
         alt="Logo"
         style={{ width: '200px', height: 'auto' }}
       />
