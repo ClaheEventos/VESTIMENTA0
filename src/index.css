@@ -171,7 +171,19 @@ keyframes fadeIn {
   }
 }
 
+.div-especial {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* toda la altura de la ventana */
+}
 
+.login-container {
+
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
 
 /* Estilos responsive */
 @media (max-width: 600px) {

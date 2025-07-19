@@ -8,7 +8,7 @@ function RegistroUniforme() {
     "Garufa", "Lomas", "Temperley", "Clahe Escalada"
   ];
 
-  const [numeroResponsable, setNumeroResponsable] = useState(""); // ✅ nuevo
+  const [numeroResponsable, setNumeroResponsable] = useState("");
   const [vendedor, setVendedor] = useState("");
   const [dni, setDni] = useState("");
   const [salon, setSalon] = useState(salones[0]);
@@ -98,13 +98,13 @@ function RegistroUniforme() {
         className="formulario"
       >
         <div>
-          <label className="label">Número del Responsable:</label>
+          <label className="label">Nombre del Responsable:</label>
           <input
             type="text"
             value={numeroResponsable}
             onChange={(e) => {
-              const soloNumeros = e.target.value.replace(/\D/g, "");
-              setNumeroResponsable(soloNumeros);
+              const soloLetras = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+              setNumeroResponsable(soloLetras);
             }}
             className="input"
             required
@@ -215,7 +215,6 @@ function RegistroUniforme() {
                       <p><strong>Fecha:</strong> {registros[registroExpandido].fecha}</p>
                       <p><strong>Hora:</strong> {registros[registroExpandido].hora}</p>
                       <p><strong>Responsable de la planilla:</strong> {registros[registroExpandido].numeroResponsable}</p>
-
                     </div>
                   </td>
                 </tr>
